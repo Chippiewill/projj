@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+project=$(pcd.py | fzf --query="$1" --select-1 "${@:2}")
+
+if [ -z "$project" ]
+then
+  return;
+fi
+
+cd $project

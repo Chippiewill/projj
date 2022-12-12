@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+subdir=$(echo $1 | python3 -c '
+import re
+import sys
+
+uri=sys.stdin.read()
+
+m = None
+if uri.startswith("git@"):
+    m = re.match(r"git@([^:]+):([a-zA-Z0-9-_/]+)\.git", uri)
+elif uri.startswith("https://"):
+    m = re.match(r"https://([^/]+)/([a-zA-Z0-9-_/]+)\.git", uri)
+
+if not m:
+    sys.exit(1)
+
+print(f"{m.group(1)}/{m.group(2)}")
+')
+
+echo $subdir
+
+if [ -z "$subdir" ]
+then
+  return;
+fi
+
+mkdir -p "$HOME/Developer/$(dirname $subdir)"
+
+git clone $1 "$HOME/Developer/$subdir"
+cd "$HOME/Developer/$subdir"
