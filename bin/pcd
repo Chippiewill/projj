@@ -1,5 +1,14 @@
 #!/usr/bin/env sh
 
+if [ -z "$1" ]
+then
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [ -n "$git_root" ]; then
+    cd "$git_root"
+    return
+  fi
+fi
+
 project=$(pcd.py | fzf --query="$1" --select-1 "${@:2}")
 
 if [ -z "$project" ]
