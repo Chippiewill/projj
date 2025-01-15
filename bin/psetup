@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+# Check if the script is being sourced
+if [ "$0" = "$BASH_SOURCE" ] || [ "$0" = "$ZSH_EVAL_CONTEXT" ]; then
+  echo "This script must be sourced, not executed."
+fi
+
+PROJECTS_ROOT="$HOME/Developer"
+PROJECT_PATH="$(pwd)/$1"
+
+PROJECT_BASE=$(echo "$PROJECT_PATH" | sed "s|$PROJECTS_ROOT/||")
+GIT_REMOTE="ssh://git@$PROJECT_BASE.git"
+
+if [ -d "$PROJECT_PATH" ]
+then
+  echo "Project already exists"
+  return
+fi
+
+if echo "$GIT_REMOTE" | grep -q "github.com"
+then
+  # create github project with gh cli
+  gh repo create "$(echo "$PROJECT_BASE" | sed 's|github.com/||')" --public
+fi
+
+mkdir -p "$PROJECT_PATH"
+cd "$PROJECT_PATH"
+git init -b main
+git remote add origin "$GIT_REMOTE"
+
